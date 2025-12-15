@@ -23,20 +23,48 @@ export default function Signup() {
     }));
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (formData.password !== formData.confirmPassword) {
-      alert("Passwords don't match!");
+  const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  if (formData.password !== formData.confirmPassword) {
+    alert("Passwords don't match!");
+    return;
+  }
+
+  if (!formData.agreeTerms) {
+    alert("You must agree to the terms and conditions");
+    return;
+  }
+
+  try {
+    const response = await fetch("http://localhost:5000/api/user/signup", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+        agreeTerms: formData.agreeTerms
+      })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      alert(data.message || "Signup failed");
       return;
     }
-    if (!formData.agreeTerms) {
-      alert("You must agree to the terms and conditions");
-      return;
-    }
-    
-    console.log("Signup data:", formData);
+
+    console.log("Signup success:", data);
     navigate("/preferences");
-  };
+
+  } catch (error) {
+    alert("Backend server not reachable");
+  }
+};
+
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-purple-50">
