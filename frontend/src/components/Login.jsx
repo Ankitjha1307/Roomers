@@ -10,11 +10,28 @@ export default function Login() {
   const [rememberMe, setRememberMe] = useState(false);
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log("Login attempt:", { email, password, rememberMe });
-    navigate("/dashboard");
-  };
+  const handleLogin = async (e) => {
+  e.preventDefault();
+
+  const response = await fetch("http://localhost:8000/api/user/login", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ email, password })
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    alert(data.message);
+    return;
+  }
+
+  localStorage.setItem("token", data.data.token);
+  navigate("/dashboard");
+};
+
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-purple-50">
@@ -27,7 +44,7 @@ export default function Login() {
               Welcome Back
             </h2>
             
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleLogin}>
               <div className="mb-6">
                 <label className="block text-purple-main font-semibold mb-2 flex items-center gap-2">
                   <FontAwesomeIcon icon={faEnvelope} className="text-gold" />
