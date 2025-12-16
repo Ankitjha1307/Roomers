@@ -13,24 +13,32 @@ export default function Login() {
   const handleLogin = async (e) => {
   e.preventDefault();
 
-  const response = await fetch("http://localhost:8000/api/user/login", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({ email, password })
-  });
+  try {
+    const response = await fetch("http://localhost:8000/api/user/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ email, password })
+    });
 
-  const data = await response.json();
+    const data = await response.json();
 
-  if (!response.ok) {
-    alert(data.message);
-    return;
+    if (!response.ok) {
+      alert(data.message || "Login failed");
+      return;
+    }
+
+    localStorage.setItem("token", data.data.token);
+    localStorage.setItem("user", JSON.stringify(data.data.user));
+
+    navigate("/dashboard");
+
+  } catch (error) {
+    alert("Backend server not reachable");
   }
-
-  localStorage.setItem("token", data.data.token);
-  navigate("/dashboard");
 };
+
 
 
   return (

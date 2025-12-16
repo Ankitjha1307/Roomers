@@ -4,6 +4,7 @@ import cors from "cors";
 import connectDB from "./db/index.js";
 import userRoutes from "./routes/user.routes.js";
 import errorMiddleware from "./middleware/error.middleware.js";
+import preferenceRoutes from "./routes/preference.routes.js";
 
 dotenv.config();
 connectDB();
@@ -14,6 +15,7 @@ app.use(cors());
 app.use(express.json());
 
 app.use("/api/user", userRoutes);
+app.use("/api/preferences", preferenceRoutes);
 
 app.use(errorMiddleware);
 

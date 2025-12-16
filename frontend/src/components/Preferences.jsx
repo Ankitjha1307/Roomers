@@ -9,7 +9,6 @@ export default function Preferences() {
     gender: 'No Preference',
     age: '',
     occupation: 'No Preference',
-    email: '',
     smoking: 'No Preference',
     pets: 'No Preference',
     cleanliness: 'No Preference',
@@ -26,11 +25,42 @@ export default function Preferences() {
     }));
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log('Preferences saved:', preferences);
-    navigate('/dashboard');
-  };
+  const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  const token = localStorage.getItem("token");
+
+  if (!token) {
+    alert("Please login again");
+    navigate("/login");
+    return;
+  }
+
+  try {
+    const response = await fetch("http://localhost:8000/api/preferences", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify(preferences)
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      alert(data.message);
+      return;
+    }
+
+    console.log("Preferences saved:", data);
+    navigate("/dashboard");
+
+  } catch (err) {
+    alert("Server error");
+  }
+};
+
 
   return (
     <div className="min-h-screen bg-gradient-purple">
